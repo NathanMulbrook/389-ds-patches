@@ -107,13 +107,11 @@ index eb4c88151..d1b16b125 100644
  #undef OFF
  #undef LITTLE_ENDIAN
  
-@@ -66,6 +67,7 @@ union semun
+@@ -66,4 +67,5 @@ union semun
  /* For mallopt. Should be removed soon. */
  #include <malloc.h>
  #endif
 +int fuzzer_started = 0;
- 
- /* Forward Declarations */
  
 @@ -386,7 +388,7 @@ usage(char *name, char *extraname, int slapd_exemode)
  
