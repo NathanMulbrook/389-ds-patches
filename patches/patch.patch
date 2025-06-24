@@ -49,7 +49,7 @@ index e89fdb50e..fcc3e9bed 100644
  
  ns_slapd_DEPENDENCIES = libslapd.la libldaputil.la
 -ns_slapd_LINK = $(LINK)
-+ns_slapd_LINK = $(CXXLINK) -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate -fcoverage-mapping  -pthread /usr/lib/clang/17/lib/x86_64-redhat-linux-gnu/libclang_rt.fuzzer_no_main.a
++ns_slapd_LINK = $(CXXLINK) -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate -fcoverage-mapping  -pthread /usr/lib/clang/20/lib/x86_64-redhat-linux-gnu/libclang_rt.fuzzer_no_main.a
  
  
  #------------------------
