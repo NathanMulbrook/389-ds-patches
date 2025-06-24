@@ -63,8 +63,8 @@ index 759c45a89..a4098e887 100644
    debug_defs="-DDEBUG -DMCC_DEBUG"
 -  debug_cflags="-g3 -ggdb -gdwarf-5  -O0"
 -  debug_cxxflags="-g3 -ggdb -gdwarf-5  -O0"
-+  debug_cflags="-g3 -ggdb -gdwarf-5  -O2 -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate  -fcoverage-mapping"
-+  debug_cxxflags="-g3 -ggdb -gdwarf-5  -O2 -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate  -fcoverage-mapping"
++  debug_cflags="-g3 -ggdb -gdwarf-5  -O0 -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate  -fcoverage-mapping"
++  debug_cxxflags="-g3 -ggdb -gdwarf-5  -O0 -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate  -fcoverage-mapping"
    debug_rust_defs="-C debuginfo=2 -Z macro-backtrace"
    cargo_defs=""
    rust_target_dir="debug"
@@ -73,7 +73,7 @@ index 759c45a89..a4098e887 100644
  AC_MSG_RESULT($enable_profiling)
  if test "$enable_profiling" = yes ; then
 -  profiling_defs="-fprofile-arcs -ftest-coverage -g3 -ggdb -gdwarf-5  -O0"
-+  profiling_defs="-fprofile-arcs -ftest-coverage -g3 -ggdb -gdwarf-5  -O2 -fprofile-instr-generate  -fcoverage-mapping"
++  profiling_defs="-fprofile-arcs -ftest-coverage -g3 -ggdb -gdwarf-5  -O0 -fprofile-instr-generate  -fcoverage-mapping"
    profiling_links="-lgcov --coverage"
  else
    profiling_defs=""
@@ -87,8 +87,8 @@ index 09170a7ed..31c294dcd 100644
    # set the default safe CFLAGS that would be set by AC_PROG_CC otherwise
 -  debug_cflags="-g -O2"
 -  debug_cxxflags="-g -O2"
-+  debug_cflags="-g -O2 -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping"
-+  debug_cxxflags="-g -O2 -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping"
++  debug_cflags="-g -O0 -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping"
++  debug_cxxflags="-g -O0 -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping"
    debug_rust_defs="-C debuginfo=2"
    cargo_defs="--release"
    rust_target_dir="release"
