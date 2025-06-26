@@ -1,7 +1,7 @@
-diff --git a/.cargo/config.in b/.cargo/config.in
+diff --git a/.cargo/config.toml.in b/.cargo/config.toml.in
 index d7d8ff4d4..32a27adc7 100644
---- a/.cargo/config.in
-+++ b/.cargo/config.in
+--- a/.cargo/config.toml.in
++++ b/.cargo/config.toml.in
 @@ -4,3 +4,7 @@ registry = "https://github.com/rust-lang/crates.io-index"
  
  [source.vendored-sources]
