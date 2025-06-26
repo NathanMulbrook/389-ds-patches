@@ -1,0 +1,109 @@
+diff --git a/Makefile.am b/Makefile.am
+index bb3e04e3d..f91057d0c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -74,6 +74,12 @@ RUST_OFFLINE = --locked --offline
+ else
+ RUST_OFFLINE =
+ endif
++RUSTC_SANITIZER_FLAGS = -Zsanitizer=address \
++    -Cpasses=sancov-module \
++	-Cinstrument-coverage \
++	-Clink-arg=-fsanitize=address \
++	-Cllvm-args=-sanitizer-coverage-inline-8bit-counters \
++	-Cllvm-args=-sanitizer-coverage-level=0 
+ 
+ if CLANG_ENABLE
+ CLANG_ON = 1
+@@ -845,7 +851,7 @@ librslapd_la_EXTRA = src/librslapd/Cargo.lock
+ 	SLAPD_DYLIB_DIR=$(abs_top_builddir)/ \
+ 	SLAPD_HEADER_DIR=$(abs_top_builddir)/ \
+ 		cargo rustc $(RUST_OFFLINE) --manifest-path=$(srcdir)/src/librslapd/Cargo.toml \
+-		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)
++		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS) $(RUSTC_SANITIZER_FLAGS)
+ 
+ # The header needs the lib build first.
+ rust-slapi-private.h: @abs_top_builddir@/rs/rslapd/@rust_target_dir@/librslapd.a
+@@ -866,7 +872,7 @@ librnsslapd_la_EXTRA = src/librnsslapd/Cargo.lock
+ 	SLAPD_DYLIB_DIR=$(abs_top_builddir)/ \
+ 	SLAPD_HEADER_DIR=$(abs_top_builddir)/ \
+ 		cargo rustc $(RUST_OFFLINE) --manifest-path=$(srcdir)/src/librnsslapd/Cargo.toml \
+-		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)
++		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)  $(RUSTC_SANITIZER_FLAGS)
+ 
+ # The header needs the lib build first.
+ rust-nsslapd-private.h: @abs_top_builddir@/rs/rnsslapd/@rust_target_dir@/librnsslapd.a
+@@ -905,7 +911,7 @@ libentryuuid_la_EXTRA = src/plugin/entryuuid/Cargo.lock
+ 	SLAPD_DYLIB_DIR=$(abs_top_builddir)/ \
+ 	SLAPD_HEADER_DIR=$(abs_top_builddir)/ \
+ 		cargo rustc $(RUST_OFFLINE) --manifest-path=$(srcdir)/src/plugins/entryuuid/Cargo.toml \
+-		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)
++		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS) $(RUSTC_SANITIZER_FLAGS)
+ 	cp $(ENTRYUUID_LIB) @abs_top_builddir@/.libs/libentryuuid.a
+ 
+ ENTRYUUID_SYNTAX_LIB = @abs_top_builddir@/rs/entryuuid_syntax/@rust_target_dir@/libentryuuid_syntax.a
+@@ -923,7 +929,7 @@ libentryuuid_syntax_la_EXTRA = src/plugin/entryuuid_syntax/Cargo.lock
+ 	SLAPD_DYLIB_DIR=$(abs_top_builddir)/ \
+ 	SLAPD_HEADER_DIR=$(abs_top_builddir)/ \
+ 		cargo rustc $(RUST_OFFLINE) --manifest-path=$(srcdir)/src/plugins/entryuuid_syntax/Cargo.toml \
+-		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)
++		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS) $(RUSTC_SANITIZER_FLAGS)
+ 	cp $(ENTRYUUID_SYNTAX_LIB) @abs_top_builddir@/.libs/libentryuuid_syntax.a
+ 
+ # == pwdchan
+@@ -943,7 +949,7 @@ libpwdchan_la_EXTRA = src/plugin/pwdchan/Cargo.lock
+ 	SLAPD_DYLIB_DIR=$(abs_top_builddir)/ \
+ 	SLAPD_HEADER_DIR=$(abs_top_builddir)/ \
+ 		cargo rustc $(RUST_OFFLINE) --manifest-path=$(srcdir)/src/plugins/pwdchan/Cargo.toml \
+-		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS)
++		$(CARGO_FLAGS) --verbose -- $(RUSTC_FLAGS) $(RUSTC_LINK_FLAGS) $(RUSTC_SANITIZER_FLAGS)
+ 	cp $(PWDCHAN_LIB) @abs_top_builddir@/.libs/libpwdchan.a
+ 
+ # == pwdchan
+ 
+diff --git a/Makefile.am b/Makefile.am
+index bb3e04e3d..f91057d0c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -156,9 +156,11 @@ PATH_DEFINES = -DLOCALSTATEDIR="\"$(localstatedir)\"" -DSYSCONFDIR="\"$(sysconfd
+ 
+ # These flags are the "must have" for all components
+-AM_CPPFLAGS = $(DEBUG_DEFINES) $(PROFILING_DEFINES) $(SYSTEMTAP_DEFINES) $(RUST_DEFINES)
+-AM_CFLAGS = $(DEBUG_CFLAGS) $(GCCSEC_CFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS)
+-AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(GCCSEC_CFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS)
++AM_CPPFLAGS = $(DEBUG_DEFINES) $(PROFILING_DEFINES) $(SYSTEMTAP_DEFINES) $(RUST_DEFINES) -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping
++AM_CFLAGS = $(DEBUG_CFLAGS) $(GCCSEC_CFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS) -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping
++#-fsanitize-address-use-after-scope
++AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(GCCSEC_CFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS) -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common -fprofile-instr-generate  -fcoverage-mapping
++# -fsanitize-address-use-after-scope
+ # Flags for Directory Server
+ # WARNING: This needs a clean up, because slap.h is a horrible mess and is publically exposed!
+-DSPLUGIN_CPPFLAGS = $(DS_DEFINES) $(DS_INCLUDES) $(PATH_DEFINES) $(SYSTEMD_DEFINES) @openldap_inc@ $(NSS_CFLAGS) $(NSPR_INCLUDES) $(SYSTEMD_CFLAGS)
++DSPLUGIN_CPPFLAGS = $(DS_DEFINES) $(DS_INCLUDES) $(PATH_DEFINES) $(SYSTEMD_DEFINES) @openldap_inc@ $(NSS_CFLAGS) $(NSPR_INCLUDES) $(SYSTEMD_CFLAGS) -Wno-implicit-function-declaration -fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -fno-common  -fprofile-instr-generate  -fcoverage-mapping
+ # This should give access to internal headers only for tests!!!
+@@ -208,7 +210,7 @@ if HPUX
+ AM_LDFLAGS = -lpthread
+ else
+ #AM_LDFLAGS = -Wl,-z,defs
+-AM_LDFLAGS = $(ZLIB_LINK) $(JSON_C_LINK) $(PW_CRACK_LINK) $(RUST_LDFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS) $(PROFILING_LINKS) $(CLANG_LDFLAGS) $(EXPORT_LDFLAGS)
++AM_LDFLAGS = $(ZLIB_LINK) $(JSON_C_LINK) $(PW_CRACK_LINK) $(RUST_LDFLAGS) $(ASAN_CFLAGS) $(MSAN_CFLAGS) $(TSAN_CFLAGS) $(UBSAN_CFLAGS) $(PROFILING_LINKS) $(CLANG_LDFLAGS) $(EXPORT_LDFLAGS) -Wno-implicit-function-declaration -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate  -fcoverage-mapping
+ endif #end hpux
+ 
+ # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html#Updating-version-info
+@@ -1849,6 +1851,7 @@ ns_slapd_SOURCES = ldap/servers/slapd/abandon.c \
+ 	ldap/servers/slapd/house.c \
+ 	ldap/servers/slapd/init.c \
+ 	ldap/servers/slapd/main.c \
++	ldap/servers/slapd/fuzzer.c \
+ 	ldap/servers/slapd/monitor.c \
+ 	ldap/servers/slapd/passwd_extop.c \
+ 	ldap/servers/slapd/psearch.c \
+@@ -1873,7 +1876,7 @@ ns_slapd_LDADD += $(LDAPSDK_LINK) $(NSS_LINK) $(LIBADD_DL) -lssl -lcrypto \
+        $(NSPR_LINK) $(SASL_LINK) $(LIBNSL) $(LIBSOCKET) $(THREADLIB) $(SYSTEMD_LIBS) $(EVENT_LINK)
+ 
+ ns_slapd_DEPENDENCIES = libslapd.la libldaputil.la
+-ns_slapd_LINK = $(LINK)
++ns_slapd_LINK = $(CXXLINK) -fsanitize=fuzzer-no-link,address,undefined -fprofile-instr-generate -fcoverage-mapping  -pthread /usr/lib/clang/20/lib/x86_64-redhat-linux-gnu/libclang_rt.fuzzer_no_main.a
+ 
+ 
+ #------------------------

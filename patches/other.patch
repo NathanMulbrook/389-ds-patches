@@ -1,0 +1,9 @@
+diff --git a/.gitignore b/.gitignore
+index 3b7c3baa3..775f7207a 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -236,3 +236,4 @@ vendor.tar.gz
+ .history
+ .vscode/launch.json
+ .cargo/config
++.vscode/settings.json

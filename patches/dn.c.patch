@@ -1,0 +1,12 @@
+diff --git a/ldap/servers/slapd/dn.c b/ldap/servers/slapd/dn.c
+index 2f32fdf96..3afcb589c 100644
+--- a/ldap/servers/slapd/dn.c
++++ b/ldap/servers/slapd/dn.c
+@@ -1550,6 +1550,7 @@ slapi_dn_beparent(
+  *   etc.
+  * }
+  */
++
+ const char *
+ slapi_dn_find_parent_ext(const char *dn, int is_tombstone)
+ {

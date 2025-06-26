@@ -1,0 +1,13 @@
+diff --git a/.cargo/config.in b/.cargo/config.in
+index d7d8ff4d4..32a27adc7 100644
+--- a/.cargo/config.in
++++ b/.cargo/config.in
+@@ -4,3 +4,7 @@ registry = "https://github.com/rust-lang/crates.io-index"
+ 
+ [source.vendored-sources]
+ directory = "./vendor"
++
++[build]
++rustflags = ["--cap-lints=warn",
++    "-C", "link-dead-code"]
+\ No newline at end of file
